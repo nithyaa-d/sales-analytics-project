@@ -1,0 +1,14 @@
+metric,value
+Initial rows,9994
+Rows after exact duplicate removal,9994
+Exact duplicate rows removed,0
+Duplicate row IDs before cleaning,0
+Total missing values before cleaning,11
+Missing order IDs,0
+Missing product IDs,0
+Rows with negative sales,0
+Rows with invalid quantity,0
+Rows with invalid discount,0
+Rows with ship date before order date,0
+Final cleaned rows,9994
+Rows removed during essential-field cleaning,0
