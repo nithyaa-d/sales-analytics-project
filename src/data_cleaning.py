@@ -1,306 +1,115 @@
 
-"""
-Project: Sales Analytics & Business Intelligence
-File: src/data_cleaning.py
-
-Purpose:
-    Load, clean, validate and prepare retail sales data
-    for SQL analysis and business intelligence.
-"""
-
 from pathlib import Path
 import pandas as pd
 
-
-# ------------------------------------------------------------
-# 1. PROJECT PATHS
-# ------------------------------------------------------------
-
+# Project directories
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+RAW_FILE = PROJECT_ROOT / "data" / "raw" / "superstore.csv"
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 
-RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "superstore.csv"
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 
-PROCESSED_DATA_PATH = (
-    PROJECT_ROOT / "data" / "processed" / "superstore_cleaned.csv"
+# Load raw data
+df = pd.read_csv(
+    RAW_FILE,
+    dtype={"Postal Code": "string"}
 )
 
-REPORT_PATH = (
-    PROJECT_ROOT / "outputs" / "data_quality_report.txt"
+initial_rows = len(df)
+
+# Standardise column names
+df.columns = (
+    df.columns
+    .str.strip()
+    .str.lower()
+    .str.replace("/", "_", regex=False)
+    .str.replace("-", "_", regex=False)
+    .str.replace(" ", "_", regex=False)
 )
 
+# Remove exact duplicate records
+exact_duplicates = int(df.duplicated().sum())
+df = df.drop_duplicates()
 
-# ------------------------------------------------------------
-# 2. LOAD DATA
-# ------------------------------------------------------------
-
-def load_data(file_path: Path) -> pd.DataFrame:
-    """Load the raw Superstore dataset."""
-
-    if not file_path.exists():
-        raise FileNotFoundError(
-            f"Dataset not found: {file_path}"
-        )
-
-    df = pd.read_csv(file_path)
-
-    print(f"Dataset loaded successfully: {df.shape}")
-    return df
-
-
-# ------------------------------------------------------------
-# 3. STANDARDISE COLUMN NAMES
-# ------------------------------------------------------------
-
-def standardise_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert column names into lowercase snake_case."""
-
-    df = df.copy()
-
-    df.columns = (
-        df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(r"[^a-z0-9]+", "_", regex=True)
-        .str.strip("_")
+# Convert date columns
+for column in ["order_date", "ship_date"]:
+    df[column] = pd.to_datetime(
+        df[column],
+        errors="coerce"
     )
 
-    return df
+# Convert numeric columns
+numeric_columns = [
+    "row_id",
+    "sales",
+    "quantity",
+    "discount",
+    "profit"
+]
 
+for column in numeric_columns:
+    df[column] = pd.to_numeric(
+        df[column],
+        errors="coerce"
+    )
 
-# ------------------------------------------------------------
-# 4. CONVERT DATA TYPES
-# ------------------------------------------------------------
+# Data quality checks
+duplicate_row_ids = int(df["row_id"].duplicated().sum())
 
-def convert_data_types(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert dates, numeric fields and identifiers."""
+missing_values = df.isnull().sum()
 
-    df = df.copy()
+invalid_sales = int((df["sales"] < 0).sum())
+invalid_quantity = int((df["quantity"] <= 0).sum())
+invalid_discount = int(
+    ((df["discount"] < 0) | (df["discount"] > 1)).sum()
+)
 
-    date_columns = ["order_date", "ship_date"]
+invalid_dates = int(
+    (df["ship_date"] < df["order_date"]).sum()
+)
 
-    numeric_columns = [
-        "sales",
-        "quantity",
-        "discount",
-        "profit"
+# Keep rows with essential identifiers and valid order dates
+df_cleaned = df.dropna(
+    subset=["row_id", "order_id", "product_id", "order_date"]
+).copy()
+
+# Save cleaned dataset
+output_file = PROCESSED_DIR / "superstore_cleaned.csv"
+df_cleaned.to_csv(output_file, index=False)
+
+# Generate data quality report
+quality_report = pd.DataFrame({
+    "metric": [
+        "Initial rows",
+        "Rows after removing exact duplicates",
+        "Exact duplicate rows removed",
+        "Duplicate row IDs",
+        "Rows in cleaned dataset",
+        "Rows with negative sales",
+        "Rows with invalid quantity",
+        "Rows with invalid discount",
+        "Rows with ship date before order date"
+    ],
+    "value": [
+        initial_rows,
+        len(df),
+        exact_duplicates,
+        duplicate_row_ids,
+        len(df_cleaned),
+        invalid_sales,
+        invalid_quantity,
+        invalid_discount,
+        invalid_dates
     ]
+})
 
-    for column in date_columns:
-        if column in df.columns:
-            df[column] = pd.to_datetime(
-                df[column],
-                errors="coerce"
-            )
+quality_report.to_csv(
+    PROCESSED_DIR / "data_quality_report.csv",
+    index=False
+)
 
-    for column in numeric_columns:
-        if column in df.columns:
-            df[column] = pd.to_numeric(
-                df[column],
-                errors="coerce"
-            )
-
-    # Identifiers and postal codes should remain strings.
-    identifier_columns = [
-        "row_id",
-        "order_id",
-        "customer_id",
-        "product_id",
-        "postal_code"
-    ]
-
-    for column in identifier_columns:
-        if column in df.columns:
-            df[column] = df[column].astype("string")
-
-    return df
-
-
-# ------------------------------------------------------------
-# 5. REMOVE EXACT DUPLICATE ROWS
-# ------------------------------------------------------------
-
-def remove_exact_duplicates(
-    df: pd.DataFrame
-) -> tuple[pd.DataFrame, int]:
-    """Remove only completely identical records."""
-
-    initial_count = len(df)
-
-    df = df.drop_duplicates().copy()
-
-    removed_count = initial_count - len(df)
-
-    print(f"Exact duplicate rows removed: {removed_count}")
-
-    return df, removed_count
-
-
-# ------------------------------------------------------------
-# 6. VALIDATE BUSINESS RULES
-# ------------------------------------------------------------
-
-def validate_data(
-    df: pd.DataFrame
-) -> dict:
-    """Identify potential data quality issues."""
-
-    report = {}
-
-    report["total_records"] = len(df)
-    report["duplicate_row_ids"] = int(
-        df["row_id"].duplicated().sum()
-    )
-
-    report["missing_values"] = (
-        df.isnull().sum().to_dict()
-    )
-
-    report["invalid_sales"] = int(
-        (df["sales"] <= 0).sum()
-        + df["sales"].isna().sum()
-    )
-
-    report["invalid_quantity"] = int(
-        (df["quantity"] <= 0).sum()
-        + df["quantity"].isna().sum()
-    )
-
-    report["invalid_discount"] = int(
-        (
-            (df["discount"] < 0)
-            | (df["discount"] > 1)
-        ).sum()
-        + df["discount"].isna().sum()
-    )
-
-    report["invalid_date_sequence"] = int(
-        (
-            df["ship_date"] < df["order_date"]
-        ).sum()
-    )
-
-    report["negative_profit_records"] = int(
-        (df["profit"] < 0).sum()
-    )
-
-    return report
-
-
-# ------------------------------------------------------------
-# 7. GENERATE DATA QUALITY REPORT
-# ------------------------------------------------------------
-
-def save_quality_report(
-    report: dict,
-    file_path: Path
-) -> None:
-    """Save data quality findings to a text file."""
-
-    file_path.parent.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    with open(file_path, "w", encoding="utf-8") as file:
-
-        file.write("SALES ANALYTICS - DATA QUALITY REPORT\n")
-        file.write("=" * 45 + "\n\n")
-
-        file.write(
-            f"Total records: {report['total_records']}\n"
-        )
-
-        file.write(
-            f"Duplicate row IDs: "
-            f"{report['duplicate_row_ids']}\n"
-        )
-
-        file.write(
-            f"Invalid sales records: "
-            f"{report['invalid_sales']}\n"
-        )
-
-        file.write(
-            f"Invalid quantity records: "
-            f"{report['invalid_quantity']}\n"
-        )
-
-        file.write(
-            f"Invalid discount records: "
-            f"{report['invalid_discount']}\n"
-        )
-
-        file.write(
-            f"Invalid date sequences: "
-            f"{report['invalid_date_sequence']}\n"
-        )
-
-        file.write(
-            f"Negative profit records: "
-            f"{report['negative_profit_records']}\n"
-        )
-
-        file.write("\nMISSING VALUES BY COLUMN\n")
-        file.write("-" * 30 + "\n")
-
-        for column, count in report["missing_values"].items():
-            file.write(f"{column}: {count}\n")
-
-    print(f"Quality report saved: {file_path}")
-
-
-# ------------------------------------------------------------
-# 8. SAVE PROCESSED DATA
-# ------------------------------------------------------------
-
-def save_processed_data(
-    df: pd.DataFrame,
-    file_path: Path
-) -> None:
-    """Export the cleaned dataset as CSV."""
-
-    file_path.parent.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    df.to_csv(
-        file_path,
-        index=False
-    )
-
-    print(f"Processed dataset saved: {file_path}")
-
-
-# ------------------------------------------------------------
-# 9. MAIN PIPELINE
-# ------------------------------------------------------------
-
-def main():
-
-    print("\nStarting sales data preparation...\n")
-
-    df = load_data(RAW_DATA_PATH)
-
-    df = standardise_columns(df)
-
-    df = convert_data_types(df)
-
-    df, removed_duplicates = remove_exact_duplicates(df)
-
-    report = validate_data(df)
-
-    report["exact_duplicate_rows_removed"] = (
-        removed_duplicates
-    )
-
-    save_quality_report(report, REPORT_PATH)
-
-    save_processed_data(df, PROCESSED_DATA_PATH)
-
-    print("\nData preparation completed!")
-    print(f"Final dataset shape: {df.shape}")
-
-
-if __name__ == "__main__":
-    main()
+print("Data cleaning completed!")
+print(f"Initial rows: {initial_rows}")
+print(f"Cleaned rows: {len(df_cleaned)}")
+print(f"Exact duplicates removed: {exact_duplicates}")
+print(f"Output saved to: {output_file}")
