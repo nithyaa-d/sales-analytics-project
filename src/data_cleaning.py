@@ -17,7 +17,7 @@ PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 # 2. LOAD RAW DATA
 # ==========================================
 
-print("Loading raw Superstore dataset...")
+print("Loading Superstore dataset...")
 
 df = pd.read_csv(
     RAW_FILE,
@@ -27,7 +27,7 @@ df = pd.read_csv(
 
 initial_rows = len(df)
 
-print(f"Dataset loaded successfully: {initial_rows} rows")
+print(f"Original records: {initial_rows}")
 
 # ==========================================
 # 3. STANDARDISE COLUMN NAMES
@@ -42,30 +42,30 @@ df.columns = (
     .str.replace(" ", "_", regex=False)
 )
 
-print("Column names standardised.")
-
 # ==========================================
 # 4. REMOVE EXACT DUPLICATES
 # ==========================================
 
 exact_duplicates = int(df.duplicated().sum())
-
 df = df.drop_duplicates().copy()
 
-print(f"Exact duplicate rows removed: {exact_duplicates}")
-
 # ==========================================
-# 5. CONVERT DATA TYPES
+# 5. CONVERT DATE COLUMNS
 # ==========================================
 
-# Convert date columns
+# Dataset uses DD-MM-YYYY dates.
 for column in ["order_date", "ship_date"]:
     df[column] = pd.to_datetime(
         df[column],
+        format="mixed",
+        dayfirst=True,
         errors="coerce"
     )
 
-# Convert numeric columns
+# ==========================================
+# 6. CONVERT NUMERIC COLUMNS
+# ==========================================
+
 numeric_columns = [
     "row_id",
     "sales",
@@ -80,26 +80,22 @@ for column in numeric_columns:
         errors="coerce"
     )
 
-print("Data types converted successfully.")
-
 # ==========================================
-# 6. DATA QUALITY CHECKS
+# 7. DATA QUALITY CHECKS
 # ==========================================
 
 duplicate_row_ids = int(
     df["row_id"].duplicated().sum()
 )
 
-missing_values_total = int(
-    df.isnull().sum().sum()
+missing_values = int(df.isnull().sum().sum())
+
+invalid_order_dates = int(
+    df["order_date"].isna().sum()
 )
 
-missing_order_ids = int(
-    df["order_id"].isnull().sum()
-)
-
-missing_product_ids = int(
-    df["product_id"].isnull().sum()
+invalid_ship_dates = int(
+    df["ship_date"].isna().sum()
 )
 
 invalid_sales = int(
@@ -117,18 +113,15 @@ invalid_discount = int(
     ).sum()
 )
 
-invalid_dates = int(
+invalid_shipping_dates = int(
     (df["ship_date"] < df["order_date"]).sum()
 )
 
-print("Data quality checks completed.")
-
 # ==========================================
-# 7. CLEAN ESSENTIAL RECORDS
+# 8. CLEAN ESSENTIAL RECORDS
 # ==========================================
 
-# Remove records missing essential identifiers
-# or order dates.
+rows_before_cleaning = len(df)
 
 df_cleaned = df.dropna(
     subset=[
@@ -139,17 +132,16 @@ df_cleaned = df.dropna(
     ]
 ).copy()
 
-# Keep only the first occurrence of duplicate row IDs.
+# Remove duplicate row IDs if any exist.
 df_cleaned = df_cleaned.drop_duplicates(
     subset=["row_id"],
     keep="first"
 ).copy()
 
-# Convert row_id to integer after removing missing values.
 df_cleaned["row_id"] = df_cleaned["row_id"].astype(int)
 
 # ==========================================
-# 8. SAVE CLEANED DATASET
+# 9. SAVE CLEANED DATA
 # ==========================================
 
 output_file = (
@@ -162,40 +154,37 @@ df_cleaned.to_csv(
 )
 
 # ==========================================
-# 9. GENERATE DATA QUALITY REPORT
+# 10. GENERATE QUALITY REPORT
 # ==========================================
 
 quality_report = pd.DataFrame({
     "metric": [
         "Initial rows",
-        "Rows after exact duplicate removal",
-        "Exact duplicate rows removed",
-        "Duplicate row IDs before cleaning",
-        "Total missing values before cleaning",
-        "Missing order IDs",
-        "Missing product IDs",
-        "Rows with negative sales",
-        "Rows with invalid quantity",
-        "Rows with invalid discount",
-        "Rows with ship date before order date",
+        "Exact duplicates removed",
+        "Duplicate row IDs",
+        "Missing values",
+        "Invalid order dates",
+        "Invalid shipping dates",
+        "Negative sales records",
+        "Invalid quantity records",
+        "Invalid discount records",
+        "Ship date before order date",
         "Final cleaned rows",
-        "Rows removed during essential-field cleaning"
+        "Rows removed during cleaning"
     ],
-
     "value": [
         initial_rows,
-        len(df),
         exact_duplicates,
         duplicate_row_ids,
-        missing_values_total,
-        missing_order_ids,
-        missing_product_ids,
+        missing_values,
+        invalid_order_dates,
+        invalid_ship_dates,
         invalid_sales,
         invalid_quantity,
         invalid_discount,
-        invalid_dates,
+        invalid_shipping_dates,
         len(df_cleaned),
-        len(df) - len(df_cleaned)
+        rows_before_cleaning - len(df_cleaned)
     ]
 })
 
@@ -209,21 +198,20 @@ quality_report.to_csv(
 )
 
 # ==========================================
-# 10. FINAL SUMMARY
+# 11. FINAL SUMMARY
 # ==========================================
 
 print("\n" + "=" * 45)
-print("DATA CLEANING COMPLETED SUCCESSFULLY")
+print("DATA CLEANING COMPLETED")
 print("=" * 45)
 
-print(f"Initial rows       : {initial_rows}")
-print(f"Cleaned rows       : {len(df_cleaned)}")
-print(f"Duplicates removed : {exact_duplicates}")
+print(f"Original records : {initial_rows}")
+print(f"Cleaned records  : {len(df_cleaned)}")
+print(f"Duplicates       : {exact_duplicates}")
+print(f"Invalid dates    : {invalid_order_dates}")
 
-print(f"\nCleaned dataset saved to:")
+print("\nGenerated files:")
 print(output_file)
-
-print(f"\nQuality report saved to:")
 print(report_file)
 
 print("=" * 45)
