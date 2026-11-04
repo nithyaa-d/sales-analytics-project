@@ -1,422 +1,270 @@
-\# Retail Sales Analytics | Python • PostgreSQL • Data Analysis
+# 📊 Retail Sales Analytics
+### End-to-End Data Analytics Project | Python · PostgreSQL · SQL
 
+An end-to-end retail analytics project analysing 9,994 Superstore transactions to uncover revenue trends, profitability drivers, customer behaviour, and regional performance.
 
+From raw data cleaning to advanced SQL analysis, this project demonstrates a complete data analytics workflow.
 
-An end-to-end retail sales analytics project using Python and PostgreSQL to transform raw transactional data into actionable business insights.
+---
 
+## 🎯 Project Highlights
 
+| Metric | Result |
+|:--|--:|
+| 💰 Total Revenue | **$2,297,200.86** |
+| 📈 Total Profit | **$286,397.02** |
+| 📊 Profit Margin | **12.47%** |
+| 🛒 Total Orders | **5,009** |
+| 👥 Unique Customers | **793** |
+| 📦 Unique Products | **1,862** |
+| Units Sold | **37,873** |
+| Average Order Value | **$458.61** |
 
-The project covers data cleaning, data quality validation, exploratory data analysis, SQL-based business intelligence, customer analysis, product profitability, and data visualisation.
+## 🔍 Business Insights
 
+**1. Regional Performance**
 
+The West region generated the highest revenue ($725,457.82) and profit ($108,418.45).
 
-\## Project Overview
+**2. Category Performance**
 
+Technology led the categories with $836,154.03 in revenue and $145,454.95 in profit.
 
+**3. Profitability Opportunity**
 
-This project analyses the Sample Superstore dataset to understand sales performance, profitability, customer purchasing behaviour, regional trends, and the impact of discount levels.
+Furniture generated $741,999.80 in revenue but achieved only a 2.49% profit margin, indicating an opportunity to review costs and pricing.
 
+**4. Customer Behaviour**
 
+781 out of 793 customers made repeat purchases, representing a 98.49% repeat-customer rate.
 
-The objective is to demonstrate a complete analytics workflow, from raw data preparation to business recommendations.
+**5. Product Performance**
 
+Canon imageCLASS 2200 Advanced Copier was the highest-revenue product, generating $61,599.82.
 
+**6. Loss-Making Products**
 
-\## Key Business Metrics
+Cubify CubeX 3D Printer Double Head Print recorded a loss of $8,879.97.
 
+**7. Discount Analysis**
 
+Discount levels of 30% and above were associated with negative aggregate profit. This is an observed relationship, not proof that discounts alone caused the losses.
 
-| KPI | Result |
+---
 
-|---|---:|
+## 🛠️ Technology Stack
 
-| Total Revenue | $2,297,200.86 |
-
-| Total Profit | $286,397.02 |
-
-| Profit Margin | 12.47% |
-
-| Total Orders | 5,009 |
-
-| Unique Customers | 793 |
-
-| Unique Products | 1,862 |
-
-| Units Sold | 37,873 |
-
-| Average Order Value | $458.61 |
-
-
-
-\## Business Insights
-
-
-
-\- \*\*Regional performance:\*\* The West region generated the highest revenue ($725,457.82) and profit ($108,418.45).
-
-\- \*\*Category performance:\*\* Technology led revenue with $836,154.03 and profit with $145,454.95.
-
-\- \*\*Profitability opportunity:\*\* Furniture generated $741,999.80 in revenue but had a relatively low profit margin of 2.49%.
-
-\- \*\*Customer retention:\*\* 781 of 793 customers made repeat purchases, representing 98.49% of customers.
-
-\- \*\*Product performance:\*\* Canon imageCLASS 2200 Advanced Copier was the highest-revenue product, generating $61,599.82.
-
-\- \*\*Loss-making products:\*\* Cubify CubeX 3D Printer Double Head Print recorded a loss of $8,879.97.
-
-\- \*\*Discount analysis:\*\* Discount levels of 30% and above were associated with negative aggregate profit in this dataset. This is an observed relationship, not proof of causation.
-
-
-
-\## Technology Stack
-
-
-
-| Area | Tools |
-
-|---|---|
-
+| Category | Technologies |
+|:--|:--|
 | Programming | Python |
-
-| Data Analysis | Pandas, NumPy |
-
-| Data Visualisation | Matplotlib, Seaborn |
-
+| Data Manipulation | Pandas, NumPy |
+| Visualisation | Matplotlib, Seaborn |
 | Database | PostgreSQL |
-
-| Querying | SQL |
-
+| Query Language | SQL |
 | Development | VS Code, pgAdmin |
-
 | Version Control | Git, GitHub |
 
+---
 
-
-\## Project Workflow
-
-
-
-1\. \*\*Data ingestion:\*\* Load the raw Superstore dataset.
-
-2\. \*\*Data cleaning:\*\* Standardise column names, parse dates, convert data types, and handle missing values.
-
-3\. \*\*Data quality:\*\* Validate duplicates, missing essential fields, invalid quantities, discounts, and shipping dates.
-
-4\. \*\*Exploratory analysis:\*\* Calculate business KPIs and investigate sales, profit, customers, products, and regions.
-
-5\. \*\*SQL analytics:\*\* Perform aggregations, customer analysis, ranking, cumulative revenue, and time-based analysis.
-
-6\. \*\*Visualisation:\*\* Generate charts to communicate trends and business findings.
-
-7\. \*\*Reporting:\*\* Document findings and analytical outputs.
-
-
-
-\## SQL Analysis
-
-
-
-The PostgreSQL scripts demonstrate:
-
-
-
-\- Business KPI calculations
-
-\- Category and regional performance
-
-\- Monthly revenue trends and year-over-year analysis
-
-\- Top-performing products using window functions
-
-\- Repeat customer analysis
-
-\- Customer ranking
-
-\- Cumulative revenue calculations
-
-\- Shipping performance analysis
-
-\- Product profitability and revenue contribution
-
-
-
-\## Visualisations
-
-
-
-The project includes the following charts:
-
-
-
-\- Monthly sales and profit trends
-
-\- Sales by product category
-
-\- Profit by region
-
-\- Top 10 products by sales
-
-\- Top 10 loss-making products
-
-\- Discount versus profit analysis
-
-
-
-Charts are available in `reports/figures/`.
-
-
-
-\## Repository Structure
-
-
+## ⚙️ Project Workflow
 
 ```text
+Raw Superstore Dataset
+         |
+         v
+Data Cleaning & Validation
+         |
+         v
+Exploratory Data Analysis
+         |
+         v
+PostgreSQL Database
+         |
+         v
+Business & Advanced SQL Analysis
+         |
+         v
+Data Visualisation
+         |
+         v
+Business Insights & Reporting
+```
 
+### 1. Data Cleaning
+- Standardised column names.
+- Converted dates and numerical data types.
+- Checked duplicates and missing values.
+- Validated essential fields and business rules.
+- Preserved all 9,994 records.
+
+### 2. Exploratory Data Analysis
+- Calculated business KPIs.
+- Analysed sales and profitability.
+- Investigated customer and product performance.
+- Compared category and regional results.
+
+### 3. SQL Analytics
+- Business KPI calculations.
+- Monthly and year-over-year revenue analysis.
+- Window functions and product ranking.
+- Repeat customer analysis.
+- Cumulative revenue.
+- Shipping performance.
+- Product profitability analysis.
+
+### 4. Data Visualisation
+Created six charts to communicate business performance and analytical findings.
+
+---
+
+## 📊 Visualisations
+
+### Monthly Sales & Profit Trends
+![Monthly Sales and Profit](reports/figures/monthly_sales_profit.png)
+
+### Sales by Category
+![Sales by Category](reports/figures/sales_by_category.png)
+
+### Profit by Region
+![Profit by Region](reports/figures/profit_by_region.png)
+
+### Top 10 Products
+![Top Products](reports/figures/top_10_products.png)
+
+### Top 10 Loss-Making Products
+![Loss-Making Products](reports/figures/top_10_loss_products.png)
+
+### Discount vs Profit
+![Discount vs Profit](reports/figures/discount_vs_profit.png)
+
+---
+
+## 📁 Repository Structure
+
+```text
 sales-analytics-project/
-
 │
-
 ├── data/
-
 │   ├── raw/
-
 │   │   └── superstore.csv
-
 │   └── processed/
-
-│       ├── superstore\_cleaned.csv
-
-│       ├── data\_quality\_report.csv
-
-│       ├── business\_kpis.csv
-
-│       ├── monthly\_trends.csv
-
-│       ├── category\_performance.csv
-
-│       └── regional\_performance.csv
-
+│       ├── superstore_cleaned.csv
+│       ├── data_quality_report.csv
+│       ├── business_kpis.csv
+│       ├── category_performance.csv
+│       ├── monthly_trends.csv
+│       ├── regional_performance.csv
+│       ├── top_products.csv
+│       ├── loss_making_products.csv
+│       └── discount_analysis.csv
 │
-
 ├── reports/
-
 │   ├── figures/
-
-│   ├── business\_insights.md
-
-│   ├── sql\_kpi\_results.txt
-
-│   └── sql\_advanced\_results.txt
-
+│   ├── business_insights.md
+│   ├── sql_kpi_results.txt
+│   └── sql_advanced_results.txt
 │
-
 ├── sql/
-
-│   ├── 01\_schema.sql
-
-│   ├── 02\_data\_quality.sql
-
-│   ├── 03\_sales\_kpis.sql
-
-│   └── 04\_advanced\_analysis.sql
-
+│   ├── 01_schema.sql
+│   ├── 02_data_quality.sql
+│   ├── 03_sales_kpis.sql
+│   └── 04_advanced_analysis.sql
 │
-
 ├── src/
-
-│   ├── data\_cleaning.py
-
+│   ├── data_cleaning.py
 │   ├── eda.py
-
 │   └── visualizations.py
-
 │
-
 ├── requirements.txt
-
+├── .gitignore
 └── README.md
-
 ```
 
+---
 
+## 🚀 How to Run
 
-\## How to Run the Project
-
-
-
-\### 1. Clone the repository
-
-
+### 1. Clone the repository
 
 ```bash
-
 git clone https://github.com/nithyaa-d/sales-analytics-project.git
-
 cd sales-analytics-project
-
 ```
 
-
-
-\### 2. Create a Python environment
-
-
+### 2. Create and activate a virtual environment
 
 ```bash
-
 python -m venv venv
-
 ```
 
-
-
-Activate it on Windows:
-
-
+Windows:
 
 ```bash
-
-venv\\Scripts\\activate
-
+venv\Scripts\activate
 ```
 
-
-
-\### 3. Install dependencies
-
-
+### 3. Install dependencies
 
 ```bash
-
 pip install -r requirements.txt
-
 ```
 
-
-
-\### 4. Run data cleaning
-
-
+### 4. Run Python scripts
 
 ```bash
-
-python src/data\_cleaning.py
-
-```
-
-
-
-\### 5. Run exploratory data analysis
-
-
-
-```bash
-
+python src/data_cleaning.py
 python src/eda.py
-
-```
-
-
-
-\### 6. Generate visualisations
-
-
-
-```bash
-
 python src/visualizations.py
-
 ```
 
+### 5. Set up PostgreSQL
 
+Create a database named `sales_analytics`.
 
-\### 7. Run PostgreSQL analysis
-
-
-
-Create a PostgreSQL database named `sales\_analytics`, then execute the SQL scripts in order:
-
-
+Execute the schema:
 
 ```bash
-
-psql -U postgres -d sales\_analytics -f sql/01\_schema.sql
-
+psql -U postgres -d sales_analytics -f sql/01_schema.sql
 ```
 
-
-
-Import the cleaned CSV into the `raw\_superstore` table using PostgreSQL's `\\copy` command:
-
-
+Import the cleaned dataset from the PostgreSQL `psql` prompt:
 
 ```sql
-
-\\copy raw\_superstore FROM 'data/processed/superstore\_cleaned.csv' WITH (FORMAT CSV, HEADER TRUE, ENCODING 'UTF8');
-
+\copy raw_superstore FROM 'data/processed/superstore_cleaned.csv' WITH (FORMAT CSV, HEADER TRUE, ENCODING 'UTF8');
 ```
 
-
-
-Then execute:
-
-
+Run the SQL analysis scripts:
 
 ```bash
-
-psql -U postgres -d sales\_analytics -f sql/02\_data\_quality.sql
-
-psql -U postgres -d sales\_analytics -f sql/03\_sales\_kpis.sql
-
-psql -U postgres -d sales\_analytics -f sql/04\_advanced\_analysis.sql
-
+psql -U postgres -d sales_analytics -f sql/02_data_quality.sql
+psql -U postgres -d sales_analytics -f sql/03_sales_kpis.sql
+psql -U postgres -d sales_analytics -f sql/04_advanced_analysis.sql
 ```
 
+---
 
+## 💡 Skills Demonstrated
 
-\## Project Outcomes
+- Python programming and data manipulation
+- SQL querying and advanced analytical techniques
+- PostgreSQL database design and management
+- Data cleaning and data quality validation
+- Exploratory data analysis
+- Business KPI development
+- Customer and product analytics
+- Data visualisation
+- Business reporting and insight generation
 
+---
 
+## 👩‍💻 Author
 
-This project demonstrates practical experience in:
-
-
-
-\- Python-based data preparation and analysis
-
-\- SQL querying and analytical problem-solving
-
-\- PostgreSQL database management
-
-\- Data quality validation
-
-\- Business KPI development
-
-\- Customer and product performance analysis
-
-\- Data visualisation and reporting
-
-\- Translating analytical results into business recommendations
-
-
-
-\## Author
-
-
-
-\*\*Nithya Doresha\*\*
-
-
+**Nithya Doresha**
 
 Data Analyst | BI Analyst | Analytics Engineer
 
+📍 Gothenburg, Sweden  
+🌍 Open to relocation anywhere within Sweden.
 
-
-Gothenburg, Sweden  
-
-Open to relocation anywhere within Sweden.
-
-
-
-\[LinkedIn](https://www.linkedin.com/in/nithyad2608/) · \[GitHub](https://github.com/nithyaa-d)
+[LinkedIn](https://www.linkedin.com/in/nithyad2608/) · [GitHub](https://github.com/nithyaa-d)
 
